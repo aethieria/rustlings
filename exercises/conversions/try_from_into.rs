@@ -24,9 +24,17 @@ struct Color {
 // Also note that correct RGB color values must be integers in the 0..=255 range.
 
 // Tuple implementation
+
+fn CheckRange(num: i16) -> bool {
+    num > 0 && num <= 255
+}
+
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = Box<dyn error::Error>;
-    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {}
+    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        if tuple.0 < 
+        tuple.0 as u8
+    }
 }
 
 // Array implementation

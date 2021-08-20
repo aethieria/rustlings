@@ -4,6 +4,7 @@
 // You can read more about it at https://doc.rust-lang.org/std/convert/trait.TryFrom.html
 use std::convert::{TryFrom, TryInto};
 use std::error;
+use std::fmt;
 
 #[derive(Debug, PartialEq)]
 struct Color {
@@ -12,7 +13,10 @@ struct Color {
     blue: u8,
 }
 
-// I AM NOT DONE
+#[derive(Debug, PartialEq)]
+enum ColorError {
+    OutOfRange
+}
 
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
@@ -31,22 +35,63 @@ fn CheckRange(num: i16) -> bool {
 
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = Box<dyn error::Error>;
-    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
-        if tuple.0 < 
-        tuple.0 as u8
+    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> { 
+        Ok(Color {
+            red: Color::Convert(tuple.0)?,
+            green: Color::Convert(tuple.1)?,
+            blue: Color::Convert(tuple.2)?
+        })
     }
 }
+
+impl Color {
+    fn Convert(num: i16) -> Result<u8, ColorError> {
+        if num >= 0 && num <=255 {
+            Ok(num as u8)
+        } else {
+            Err(ColorError::OutOfRange)
+        }
+    }
+}
+
+impl fmt::Display for ColorError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let description = match *self {
+            ColorError::OutOfRange => "Value must be between 0 and 255"
+        };
+
+        f.write_str(description)
+    }
+}
+
+impl error::Error for ColorError {}
 
 // Array implementation
 impl TryFrom<[i16; 3]> for Color {
     type Error = Box<dyn error::Error>;
-    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {}
+    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        Ok(Color {
+            red: Color::Convert(arr[0])?,
+            green: Color::Convert(arr[1])?,
+            blue: Color::Convert(arr[2])?
+        })
+    }
 }
 
 // Slice implementation
 impl TryFrom<&[i16]> for Color {
     type Error = Box<dyn error::Error>;
-    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {}
+    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err("Wrong number of arguments".into());
+        }
+
+        Ok(Color {
+            red: Color::Convert(slice[0])?,
+            green: Color::Convert(slice[1])?,
+            blue: Color::Convert(slice[2])?
+        })
+    }
 }
 
 fn main() {
